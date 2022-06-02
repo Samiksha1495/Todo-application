@@ -1,2 +1,2 @@
-open terminal run node index.js
-open url in which server is running
+open terminal run "node index.js"
+open url "http://127.0.0.1:8080/"
