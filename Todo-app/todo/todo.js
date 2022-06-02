@@ -1,5 +1,5 @@
 // select DOM
-
+var rowCount = 0;
 const form = document.querySelector(".form-inline")
 const todoinput = document.querySelector(".todo-input")
 const todotable = document.querySelector(".todo-table-tbody")
@@ -16,41 +16,41 @@ todosubmit.addEventListener("click", addTask);
 tasks=[]
 function addTask(e){
     e.preventDefault()
-    const rowCount = todotable.rows.length
-
+    // ++rowCount;
+    
     //add tr
 
     const newtodo = document.createElement("tr");
-    newtodo.classList.add("todos-"+ rowCount)
+    newtodo.classList.add("todos")
 
     //add td item
     const newtodoItem = document.createElement("td")
     newtodoItem.innerText = todoinput.value;
-    newtodoItem.classList.add("todo-item-"+ rowCount)
+    newtodoItem.classList.add("todo-item")
     newtodo.appendChild(newtodoItem);
     todoinput.value = "";
 
     //add td checkbox
     const newtodoCheck = document.createElement("td")
-    newtodoCheck.innerHTML = `<input type='checkbox' id= "todo-input-${rowCount}">`
-    newtodoCheck.onclick = function(){
+    newtodoCheck.innerHTML = `<input type='checkbox'>`
+    newtodoCheck.onclick = function(e){
         newtodoCheck.parentElement.classList.toggle("done");
-        document.getElementById('todo-input-' + rowCount).disabled = true;
-        document.getElementById('todo-delete-' + rowCount).disabled = true;
+        e.path[0].disabled = true
     }
-    newtodoCheck.classList.add("todo-check-"+ rowCount)
+    newtodoCheck.classList.add("todo-check")
     newtodo.appendChild(newtodoCheck);
 
     //add td button
     const newtodoDelete = document.createElement("td")
-    newtodoDelete.innerHTML = `<button type='submit' id = "todo-delete-${rowCount}">Delete</button>`
+    newtodoDelete.innerHTML = `<button type='submit'>Delete</button>`
     newtodoDelete.onclick = function(){
         newtodoDelete.parentElement.remove();
     }
-    newtodoDelete.classList.add("todo-delete-" + rowCount)
+    newtodoDelete.classList.add("todo-delete")
     newtodo.appendChild(newtodoDelete);
 
     //attach final todo
     todotable.appendChild(newtodo)
+    
 }
 

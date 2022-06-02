@@ -4,6 +4,10 @@
     align-items: center;
     
 }
+.todo{
+    border: 2px solid;
+    padding: 100px;
+}
 
 .form-inline label{
     margin: 5px 10px 5px 0;
