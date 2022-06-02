@@ -24,33 +24,42 @@ function addTask(e){
     newtodo.classList.add("todos")
 
     //add td item
-    const newtodoItem = document.createElement("td")
-    newtodoItem.innerText = todoinput.value;
-    newtodoItem.classList.add("todo-item")
-    newtodo.appendChild(newtodoItem);
+    const descriptionCol = document.createElement("td")
+    descriptionCol.innerText = todoinput.value;
+    descriptionCol.classList.add("todo-item")
+    newtodo.appendChild(descriptionCol);
     todoinput.value = "";
 
     //add td checkbox
-    const newtodoCheck = document.createElement("td")
-    newtodoCheck.innerHTML = `<input type='checkbox'>`
-    newtodoCheck.onclick = function(e){
-        newtodoCheck.parentElement.classList.toggle("done");
-        e.path[0].disabled = true
+    const compeletedCol = document.createElement("td")
+    const completedCheckBox = document.createElement("input")
+    completedCheckBox.setAttribute("type","checkbox")
+    // newtodoCheck.innerHTML = `<input type='checkbox'>`
+    completedCheckBox.onclick = function(e){
+        compeletedCol.classList.toggle("done");
+        descriptionCol.classList.toggle("done")
+        // e.path[0].disabled = true
     }
-    newtodoCheck.classList.add("todo-check")
-    newtodo.appendChild(newtodoCheck);
+    compeletedCol.appendChild(completedCheckBox)
+    compeletedCol.classList.add("todo-check")
+    newtodo.appendChild(compeletedCol);
 
     //add td button
-    const newtodoDelete = document.createElement("td")
-    newtodoDelete.innerHTML = `<button type='submit'>Delete</button>`
-    newtodoDelete.onclick = function(){
-        newtodoDelete.parentElement.remove();
+    const deleteCol = document.createElement("td")
+    const deleteButton= document.createElement("button")
+    deleteButton.setAttribute("type",'submit')
+    deleteButton.innerHTML="Delete"
+    // newtodoDelete.innerHTML = `<button type='submit'>Delete</button>`
+    deleteButton.onclick = function(){
+        deleteCol.parentElement.remove();
     }
-    newtodoDelete.classList.add("todo-delete")
-    newtodo.appendChild(newtodoDelete);
+  
+    deleteCol.classList.add("todo-delete")
+    deleteCol.appendChild(deleteButton)
+    newtodo.appendChild(deleteCol);
 
     //attach final todo
     todotable.appendChild(newtodo)
-    
+
 }
 
