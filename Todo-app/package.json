@@ -9,6 +9,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "json-server": "^0.17.0"
+    "http-server": "^14.1.1",
+    "json-server": "^0.17.0",
+    "xhr2": "^0.2.1"
   }
 }

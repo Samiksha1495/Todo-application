@@ -1,3 +1,18 @@
+console.log("enter")
+// var XMLHttpRequest = require('xhr2');
+var xmlhttp = new XMLHttpRequest();
+var url = "http://localhost:3000/records";
+
+xmlhttp.onload = function() {
+    if (this.readyState == 4 && this.status == 200) {
+        var myArr = JSON.parse(this.responseText);
+        console.log(myArr)
+    }
+};
+
+xmlhttp.open("GET", url, true);
+xmlhttp.send();
+
 // select DOM
 var rowCount = 0;
 const form = document.querySelector(".form-inline")
@@ -37,7 +52,7 @@ function addTask(e){
     // newtodoCheck.innerHTML = `<input type='checkbox'>`
     completedCheckBox.onclick = function(e){
         compeletedCol.classList.toggle("done");
-        descriptionCol.classList.toggle("done")
+        descriptionCol.classList.toggle("done");
         // e.path[0].disabled = true
     }
     compeletedCol.appendChild(completedCheckBox)
@@ -60,6 +75,27 @@ function addTask(e){
 
     //attach final todo
     todotable.appendChild(newtodo)
+    getCurrentCity();
 
 }
 
+function getCurrentCity() {
+    
+    return fetch("http://localhost:3000/records")
+        .then(response => console.log(response.json()))
+}
+
+var getJSON = function(url, callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.responseType = 'json';
+   
+    var status = xhr.status;
+    if (status === 200) {
+    callback(null, xhr.response);
+    } else {
+    callback(status, xhr.response);
+    }
+    
+    xhr.send();
+};
