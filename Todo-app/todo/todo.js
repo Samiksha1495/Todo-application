@@ -1,12 +1,15 @@
-console.log("enter")
-// var XMLHttpRequest = require('xhr2');
-var xmlhttp = new XMLHttpRequest();
-var url = "http://localhost:3000/records";
+//load full dataset from json db
+'use strict'
 
-xmlhttp.onload = function() {
+console.log("enter")
+var xmlhttp = new XMLHttpRequest();
+var url = "http://localhost:5000/records";
+var myArr;
+xmlhttp.onload = function () {
     if (this.readyState == 4 && this.status == 200) {
-        var myArr = JSON.parse(this.responseText);
+        myArr = JSON.parse(this.responseText);
         console.log(myArr)
+        loadData(myArr)
     }
 };
 
@@ -23,16 +26,23 @@ const todosubmit = document.querySelector(".todo-submit")
 // event listner
 
 todosubmit.addEventListener("click", addTask);
-
 //functions
 
+function loadData(myArr) {
+    console.log(myArr.length)
+    for (let i = 0; i < myArr.length; i++) {
+        console.log(myArr[i]);
+    }
+}
 
 
-tasks=[]
-function addTask(e){
-    e.preventDefault()
+
+function addTask(e) {
+    console.log("inside")
+    e.preventDefault();
+    var task = {}
     // ++rowCount;
-    
+
     //add tr
 
     const newtodo = document.createElement("tr");
@@ -43,16 +53,17 @@ function addTask(e){
     descriptionCol.innerText = todoinput.value;
     descriptionCol.classList.add("todo-item")
     newtodo.appendChild(descriptionCol);
-    todoinput.value = "";
+
 
     //add td checkbox
     const compeletedCol = document.createElement("td")
     const completedCheckBox = document.createElement("input")
-    completedCheckBox.setAttribute("type","checkbox")
+    completedCheckBox.setAttribute("type", "checkbox")
     // newtodoCheck.innerHTML = `<input type='checkbox'>`
-    completedCheckBox.onclick = function(e){
+    completedCheckBox.onclick = function (e) {
         compeletedCol.classList.toggle("done");
         descriptionCol.classList.toggle("done");
+
         // e.path[0].disabled = true
     }
     compeletedCol.appendChild(completedCheckBox)
@@ -61,41 +72,46 @@ function addTask(e){
 
     //add td button
     const deleteCol = document.createElement("td")
-    const deleteButton= document.createElement("button")
-    deleteButton.setAttribute("type",'submit')
-    deleteButton.innerHTML="Delete"
+    const deleteButton = document.createElement("button")
+    deleteButton.setAttribute("type", 'submit')
+    deleteButton.innerHTML = "Delete"
     // newtodoDelete.innerHTML = `<button type='submit'>Delete</button>`
-    deleteButton.onclick = function(){
+    deleteButton.onclick = function () {
         deleteCol.parentElement.remove();
     }
-  
+
     deleteCol.classList.add("todo-delete")
     deleteCol.appendChild(deleteButton)
     newtodo.appendChild(deleteCol);
 
     //attach final todo
     todotable.appendChild(newtodo)
-    getCurrentCity();
+    task["description"] = todoinput.value;
+    task["check"] = completedCheckBox.value == 'on' ? false : true;
+    // task["delete"] = deleteButton.value;
 
+    todoinput.value = "";
+    postData(task,e)
+ 
 }
 
-function getCurrentCity() {
-    
-    return fetch("http://localhost:3000/records")
-        .then(response => console.log(response.json()))
+// function sleep(ms) {
+//     console.log("sleeping")
+//     return new Promise(resolve => setTimeout(resolve, ms));
+// }
+
+function postData(task,e) {
+    let response = fetch('http://localhost:5000/records', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json;charset=utf-8'
+        },
+        body: JSON.stringify(task)
+      });
+      e.preventDefault();
+    //   let result = response.json();
+    //   alert(result.message);
+    return false
 }
 
-var getJSON = function(url, callback) {
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', url, true);
-    xhr.responseType = 'json';
-   
-    var status = xhr.status;
-    if (status === 200) {
-    callback(null, xhr.response);
-    } else {
-    callback(status, xhr.response);
-    }
-    
-    xhr.send();
-};
+
