@@ -1,6 +1,6 @@
 'use strict'
 
-document.addEventListener('DOMContentLoaded',function(){
+document.addEventListener('DOMContentLoaded',function(e){
 
     const todoForm = document.querySelector("#todo-form")
     const todoContainer = document.querySelector("#todo-body")
@@ -14,19 +14,25 @@ document.addEventListener('DOMContentLoaded',function(){
     }
 
     var allItems=[]
+    e.preventDefault()
+    e.stopPropagation()
 
     fetch(`${todoURL}`)
     .then(response => response.json())
     .then(data => data.forEach((item)=>{
         allItems = data
         console.log(item.check)
-        todoContainer.innerHTML+=`
-        <tr id= item-${item.id}>
-        <td  id="desc-${item.id}" ng-class="${item.check}?'done':''">${item.description}</td>
-        <td><input type="checkbox" data-id=${item.id} id="check-${item.id}" data-action="checkValue"></td>
+
+        todoContainer.innerHTML+=`<tr id= item-${item.id} >
+        <td id="desc-${item.id}">${item.description}</td>
+        <td><input type="checkbox" data-id=${item.id} id="check-${item.id}" data-action="checkValue" ></td>
         <td><button type="click" data-id=${item.id} id="delete-${item.id}" data-action="delete">Delete</button></td>
-        </tr>
-        `
+        </tr>`
+
+        if(item.check){
+            var row= document.querySelector(`#desc-${item.id}`).classList.add("done")
+            document.querySelector(`#check-${item.id}`).setAttribute("checked", true)
+        }
     }))
 
     //create post
@@ -46,8 +52,8 @@ document.addEventListener('DOMContentLoaded',function(){
         }).then(response => response.json())
         .then(item =>{
             allItems.push(item)
-            todoContainer.innerHTML+=`<tr id= item-${item.id}>
-            <td id="desc-${item.id}" ng-class="${item.check}?'done':''">${item.description}</td>
+            todoContainer.innerHTML+=`<tr id= item-${item.id} >
+            <td id="desc-${item.id}" >${item.description}</td>
             <td><input type="checkbox" data-id=${item.id} id="check-${item.id}" data-action="checkValue" ></td>
             <td><button type="click" data-id=${item.id} id="delete-${item.id}" data-action="delete">Delete</button></td>
             </tr>`
@@ -55,9 +61,9 @@ document.addEventListener('DOMContentLoaded',function(){
     })
 
     //delete task
-
+    // const deleteButoon = document.get
     todoContainer.addEventListener('click', function(e){
-        e.preventDefault();
+        // e.preventDefault();
 
         if(e.target.dataset.action == 'delete'){
             document.querySelector(`#delete-${e.target.dataset.id}`).remove()
@@ -70,11 +76,22 @@ document.addEventListener('DOMContentLoaded',function(){
         }
 
         if(e.target.dataset.action == 'checkValue'){
-            const checkInput =  document.querySelector(`#check-${e.target.dataset.id}`)
-            const checkUpdate = document.querySelector(`#item-${e.target.dataset.id}`)
 
+            e.stopPropagation()
+
+            const checkInput =  document.querySelector(`#check-${e.target.dataset.id}`)
+            const checkUpdate = document.querySelector(`#desc-${e.target.dataset.id}`)
+            
             var obj= allItems.find(item => {return item.id == e.target.dataset.id})
             obj.check = checkInput.checked;
+
+            if(checkInput.checked){
+                checkUpdate.classList.add("done")
+            }
+            if(!checkInput.checked){
+                checkUpdate.classList.remove("done")
+            }
+
             fetch(`${todoURL}/${e.target.dataset.id}`,{
                 method: 'PATCH',
                 body : JSON.stringify(obj),
@@ -82,11 +99,6 @@ document.addEventListener('DOMContentLoaded',function(){
             }).then(response=>response.json())
             .then( item => {
                 console.log(item);
-                checkUpdate.innerHTML = `<tr id= item-${item.id}>
-                <td id="desc-${item.id}" ng-class="${item.check}?'done':''">${item.description}</td>
-                <td><input type="checkbox" data-id=${item.id} id="check-${item.id}" data-action="checkValue" ></td>
-                <td><button type="click" data-id=${item.id} id="delete-${item.id}" data-action="delete">Delete</button></td>
-                </tr>`
             })
         }
     })
