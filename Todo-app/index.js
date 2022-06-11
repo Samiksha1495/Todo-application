@@ -23,10 +23,11 @@ document.addEventListener('DOMContentLoaded',function(e){
         allItems = data
         console.log(item.check)
 
-        todoContainer.innerHTML+=`<tr id= item-${item.id} >
-        <td id="desc-${item.id}">${item.description}</td>
+        todoContainer.innerHTML+=`<tr id= item-${item.id}>
+        <td id="desc-${item.id}"><input id="edit-title-${item.id}" value="${item.description}" readonly='readonly'></td>
         <td><input type="checkbox" data-id=${item.id} id="check-${item.id}" data-action="checkValue" ></td>
         <td><button type="click" data-id=${item.id} id="delete-${item.id}" data-action="delete">Delete</button></td>
+        <td id="edit-item-${item.id}"><button type="click" data-id=${item.id} id="edit-${item.id}" data-action="edit">Edit</button></td>
         </tr>`
 
         if(item.check){
@@ -52,29 +53,42 @@ document.addEventListener('DOMContentLoaded',function(e){
         }).then(response => response.json())
         .then(item =>{
             allItems.push(item)
-            todoContainer.innerHTML+=`<tr id= item-${item.id} >
-            <td id="desc-${item.id}" >${item.description}</td>
+            todoContainer.innerHTML+=`<tr id= item-${item.id}>
+            <td id="desc-${item.id}"><input id="edit-title-${item.id}" value="${item.description}" readonly='readonly'></td>
             <td><input type="checkbox" data-id=${item.id} id="check-${item.id}" data-action="checkValue" ></td>
             <td><button type="click" data-id=${item.id} id="delete-${item.id}" data-action="delete">Delete</button></td>
-            </tr>`
+            <td id="edit-item-${item.id}"><button type="click" data-id=${item.id} id="edit-${item.id}" data-action="edit">Edit</button></td>
+            </tr>
+            `
         })
     })
 
+  
+    
+    
     //delete task
     // const deleteButoon = document.get
     todoContainer.addEventListener('click', function(e){
         // e.preventDefault();
 
         if(e.target.dataset.action == 'delete'){
-            document.querySelector(`#delete-${e.target.dataset.id}`).remove()
-            fetch(`${bookURL}/${e.target.dataset.id}`, {
+            document.querySelector(`#item-${e.target.dataset.id}`).remove()
+            fetch(`${todoURL}/${e.target.dataset.id}`, {
               method: 'DELETE',
               headers: {
                 'Content-Type': 'application/json'
               }
             }).then( response => response.json())
-        }
+        } 
 
+            var item= allItems.find(item => {return item.id == e.target.dataset.id})
+
+            const row_desc= document.querySelector(`#edit-title-${e.target.dataset.id}`)
+            const row_edit = document.querySelector(`#edit-${e.target.dataset.id}`)
+            
+
+           
+           
         if(e.target.dataset.action == 'checkValue'){
 
             e.stopPropagation()
@@ -101,6 +115,30 @@ document.addEventListener('DOMContentLoaded',function(e){
                 console.log(item);
             })
         }
+
+        else if(row_edit.innerHTML.toLowerCase() == 'edit'){
+            row_edit.innerHTML="save"
+            row_desc.removeAttribute('readonly')
+        }
+        else if(row_edit.innerHTML.toLowerCase() == 'save'){ 
+                row_edit.innerHTML="Edit"
+                row_desc.setAttribute('readonly','readonly')
+                item.description = document.querySelector(`#edit-title-${e.target.dataset.id}`).value
+                console.log(item)
+                e.preventDefault()
+    
+                fetch(`${todoURL}/${item.id}`,{
+                    method:"PATCH",
+                    body: JSON.stringify(item),
+                    headers:{
+                        'Content-Type':'application/json'
+                    }
+    
+                }).then(res=>res.json())
+               
+            
+
+    }
     })
 
     //completed task
